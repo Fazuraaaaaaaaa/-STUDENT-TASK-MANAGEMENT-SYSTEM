@@ -24,8 +24,8 @@ foreach ($tmpDirs as $dir) {
 $sqliteTarget = '/tmp/database.sqlite';
 $bundledDb = __DIR__ . '/../database/database.sqlite';
 
-if (! file_exists($sqliteTarget)) {
-    if (file_exists($bundledDb)) {
+if (! file_exists($sqliteTarget) || filesize($sqliteTarget) === 0) {
+    if (file_exists($bundledDb) && filesize($bundledDb) > 0) {
         @copy($bundledDb, $sqliteTarget);
     } else {
         @touch($sqliteTarget);

@@ -1,4 +1,4 @@
-j<x-layouts.app title="Beranda Guru">
+<x-layouts.app title="Beranda Guru">
 @php
 $total=auth()->user()->teacherAssignments()->count();
 $active=auth()->user()->teacherAssignments()->where('status','published')->count();
