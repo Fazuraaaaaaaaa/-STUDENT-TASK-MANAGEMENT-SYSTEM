@@ -1,0 +1,7 @@
+.env
+.env.*
+!.env.example
+database/database.sqlite
+*.sqlite*
+storage/logs/*.log
+storage/app/private/submissions/*
