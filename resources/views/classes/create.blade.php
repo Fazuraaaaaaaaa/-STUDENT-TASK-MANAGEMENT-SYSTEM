@@ -1,0 +1,9 @@
+<x-layouts.app title="Create Class">
+<div class="max-w-xl mx-auto"><div class="mb-6"><a href="{{route('classes.index')}}" class="text-sm font-semibold text-indigo-600">← Back to classes</a><h1 class="text-2xl font-extrabold text-slate-900 mt-2">Create New Class</h1></div>
+<div class="card p-6"><form method="POST" action="{{route('classes.store')}}">@csrf<div class="space-y-4">
+<div><label class="block text-sm font-semibold text-slate-700 mb-1">Class name *</label><input name="name" value="{{old('name')}}" required class="w-full rounded-xl border px-4 py-3 text-sm @error('name') border-red-400 @enderror"></div>
+<div><label class="block text-sm font-semibold text-slate-700 mb-1">Class code *</label><input name="class_code" value="{{old('class_code')}}" required placeholder="e.g. XII-RPL-1" class="w-full rounded-xl border px-4 py-3 text-sm @error('class_code') border-red-400 @enderror">@error('class_code')<p class="text-xs text-red-600 mt-1">{{$message}}</p>@enderror</div>
+<div><label class="block text-sm font-semibold text-slate-700 mb-1">Academic year *</label><input name="academic_year" value="{{old('academic_year','2026/2027')}}" required class="w-full rounded-xl border px-4 py-3 text-sm"></div>
+<div><label class="block text-sm font-semibold text-slate-700 mb-1">Description</label><textarea name="description" rows="3" class="w-full rounded-xl border px-4 py-3 text-sm">{{old('description')}}</textarea></div>
+</div><div class="mt-6 flex gap-3 justify-end"><a href="{{route('classes.index')}}" class="btn-secondary">Cancel</a><button class="btn-primary">Create Class</button></div></form></div></div>
+</x-layouts.app>
