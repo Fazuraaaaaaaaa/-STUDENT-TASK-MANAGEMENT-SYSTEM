@@ -34,21 +34,43 @@ class AssignmentController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', Assignment::class);
+
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'instructions' => 'nullable|string',
             'class_id' => 'required|exists:school_classes,id',
             'subject_id' => 'required|exists:subjects,id',
-            'deadline_at' => 'required|date|after:now',
+            'deadline_at' => 'required|date',
             'max_score' => 'required|integer|min:1',
             'status' => 'required|in:draft,published',
+        ], [
+            'title.required' => 'Judul tugas wajib diisi.',
+            'description.required' => 'Deskripsi tugas wajib diisi.',
+            'class_id.required' => 'Kelas tujuan wajib dipilih.',
+            'class_id.exists' => 'Kelas yang dipilih tidak valid.',
+            'subject_id.required' => 'Mata pelajaran wajib dipilih.',
+            'subject_id.exists' => 'Mata pelajaran yang dipilih tidak valid.',
+            'deadline_at.required' => 'Batas waktu pengumpulan wajib diisi.',
+            'deadline_at.date' => 'Format batas waktu tidak valid.',
+            'max_score.required' => 'Nilai maksimal wajib diisi.',
+            'max_score.min' => 'Nilai maksimal minimal adalah 1.',
+            'status.required' => 'Status publikasi wajib dipilih.',
         ]);
 
-        // Authorization check: class must belong to current teacher
-        abort_unless(SchoolClass::whereKey($data['class_id'])->where('teacher_id', auth()->id())->exists(), 403);
-        // Subject must belong to this class
-        abort_unless(Subject::whereKey($data['subject_id'])->where('class_id', $data['class_id'])->exists(), 422, 'Mata pelajaran tidak sesuai dengan kelas yang dipilih.');
+        // Verifikasi kelas milik guru yang sedang login
+        abort_unless(
+            SchoolClass::whereKey($data['class_id'])->where('teacher_id', auth()->id())->exists(),
+            403,
+            'Anda tidak memiliki akses ke kelas ini.'
+        );
+
+        // Verifikasi mata pelajaran milik guru
+        abort_unless(
+            Subject::whereKey($data['subject_id'])->where('teacher_id', auth()->id())->exists(),
+            403,
+            'Mata pelajaran tidak valid untuk akun Anda.'
+        );
 
         $data['teacher_id'] = auth()->id();
         $data['allow_late_submission'] = $request->boolean('allow_late_submission');
@@ -57,7 +79,7 @@ class AssignmentController extends Controller
 
         Assignment::create($data);
 
-        return redirect()->route('assignments.index')->with('success', 'Tugas berhasil dibuat.');
+        return redirect()->route('assignments.index')->with('success', 'Tugas baru berhasil dibuat dan ditambahkan!');
     }
 
     public function show(Assignment $assignment)
